@@ -1,4 +1,4 @@
-import { ThemeProvider, Table, TableBody, TableHead, TableContainer, TableCell, TableRow, Container, Grid } from '@material-ui/core';
+import { ThemeProvider, Table, TableBody, TableHead, TableContainer, TableCell, TableRow, Container, Grid, CircularProgress } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import { createMuiTheme, makeStyles, withStyles } from '@material-ui/core/styles';
 import purple from '@material-ui/core/colors/purple';
@@ -49,6 +49,7 @@ function Balance() {
     const classes = useStyles();
     const dataList = [];
     const [data, setData] = useState(dataList);
+    const [loading, setLoading] = useState(true);
     let currentPricing = 0;
     const history = useHistory();
     let payload = {};
@@ -83,8 +84,10 @@ function Balance() {
                             }
                         ];
                         setData(data);
+                        setLoading(false);
                     } else {
                         alert("Unable to fetch balance");
+                        setLoading(false);
                     }
                 })
                 .catch((response) => {
@@ -97,6 +100,41 @@ function Balance() {
         }
     }, []);
 
+    if (loading === true) {
+        return (
+            <div>
+            <ThemeProvider theme={theme}>
+                <Drawer pageName="Balance" history={history}/>
+                <Container>
+                    <Grid
+                    container
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                    >      
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <CircularProgress />
+                    </Grid>
+                </Container>
+            </ThemeProvider>
+            </div>
+        )
+    } else {
     return (
         <div>
             <ThemeProvider theme={theme}>
@@ -136,6 +174,7 @@ function Balance() {
             </ThemeProvider>
         </div>
     )
+                            }
 
 }
 
