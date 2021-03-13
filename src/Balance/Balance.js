@@ -4,9 +4,9 @@ import { createMuiTheme, makeStyles, withStyles } from '@material-ui/core/styles
 import purple from '@material-ui/core/colors/purple';
 import Paper from '@material-ui/core/Paper';
 import PieChart from '../Components/PieChart';
-import AppBar from '../Components/AppBar';
 import { useHistory } from "react-router-dom";
 import ApiService from "../services/ApiService";
+import Drawer from '../Components/Drawer';
 
 const apiService = new ApiService();
 
@@ -53,44 +53,54 @@ function Balance() {
     const history = useHistory();
     let payload = {};
 
+    const redirect= () => {
+        let path = '/'
+        history.push(path);
+    };
+
     useEffect(() => {
-        apiService.queryCurrentPricing(payload)
-        .then((response) => {
-            currentPricing = response.data.price;
-            payload = {
-                "accountKey": JSON.parse(sessionStorage.getItem("userInfo")).accountKey
-            }
-            apiService.queryBalance(payload)
+        if (sessionStorage.getItem("userInfo") === null) {
+            alert("You are not logged in")
+            redirect();
+        } else {
+            apiService.queryCurrentPricing(payload)
             .then((response) => {
-                if (response.data !== null) {
-                    const data = [
-                        {
-                            asset: 'SGDT', 
-                            balance: response.data.cashBalance, value: response.data.cashBalance
-                        },
-                        {
-                            asset: 'TTK',
-                            balance: response.data.assetBalance, value: Math.round((response.data.assetBalance * currentPricing) * 100) / 100
-                        }
-                    ];
-                    setData(data);
-                } else {
-                    alert("Unable to fetch balance");
+                currentPricing = response.data.price;
+                payload = {
+                    "accountKey": JSON.parse(sessionStorage.getItem("userInfo")).accountKey
                 }
+                apiService.queryBalance(payload)
+                .then((response) => {
+                    if (response.data !== null) {
+                        const data = [
+                            {
+                                asset: 'SGDT', 
+                                balance: response.data.cashBalance, value: response.data.cashBalance
+                            },
+                            {
+                                asset: 'TTK',
+                                balance: response.data.assetBalance, value: Math.round((response.data.assetBalance * currentPricing) * 100) / 100
+                            }
+                        ];
+                        setData(data);
+                    } else {
+                        alert("Unable to fetch balance");
+                    }
+                })
+                .catch((response) => {
+                    alert("Unable to fetch balance");
+                });
             })
             .catch((response) => {
                 alert("Unable to fetch balance");
             });
-        })
-        .catch((response) => {
-            alert("Unable to fetch balance");
-        });
+        }
     }, []);
 
     return (
         <div>
             <ThemeProvider theme={theme}>
-                <AppBar pageName="Balance" history={history}/>
+                <Drawer pageName="Balance" history={history}/>
                 <Container>
                     <Grid
                     container
