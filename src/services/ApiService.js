@@ -49,4 +49,20 @@ export default class ApiService {
             return null;
         });
     }
+
+    async queryTransactions(payload) {
+        return axios.post(config.baseUrl+'transactions/view', payload, {
+            headers: {
+                'x-api-key': config.apiKey
+            }
+        })
+        .then(function(response) {
+            console.log(response);
+            return response;               
+        })
+        .catch(function(error) {
+            console.log(error)
+            return null;
+        });
+    }
 }
